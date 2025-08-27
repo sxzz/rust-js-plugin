@@ -1,0 +1,10 @@
+[package]
+name = "rust-js-plugin"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+boa_engine = "0.20.0"
+boa_runtime = "0.20.0"
+oxc_resolver = "11.7.1"
+rustc-hash = "2.1.1"
