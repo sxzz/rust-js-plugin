@@ -2,8 +2,6 @@
 
 This project is a simple demo created for fun by a Rust learner.
 
-Special thanks to https://github.com/biomejs/biome/pull/7300 for the implementation.
-
 **Disclaimer**
 
 Please note that this repository is a personal learning project and should be viewed as such. The code and design presented here are the result of my ongoing exploration of Rust and its integration with JavaScript plugins. I am aware that this demo may not reflect professional standards or best practices, and it is not intended to be a production-ready solution. My primary goal in sharing this project is to document my learning process and to encourage others who are also new to Rust to experiment and learn without fear of making mistakes.
