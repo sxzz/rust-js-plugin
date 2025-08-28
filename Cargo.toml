@@ -4,10 +4,16 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-anyhow = "1.0.99"
-log = "0.4.27"
 oxc_resolver = "11.7.1"
-relative-path = "2.0.1"
-rquickjs = { version = "0.9.0", features = ["loader"] }
-rquickjs-extra = { version = "0.1.1", features = ["console"] }
-simple_logger = "5.0.0"
+anyhow = "1.0.99"
+tokio = { version = "1", features = ["full"] }
+
+[dependencies.rquickjs]
+git = "https://github.com/DelSkayn/rquickjs.git"
+version = "0.9.0"
+features = ["full-async", "loader"]
+
+[dependencies.llrt_modules]
+path = "llrt/llrt_modules"
+features = ["console", "timers", "fs", "buffer", "process"]
+default-features = false

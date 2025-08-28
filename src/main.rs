@@ -1,37 +1,47 @@
-use crate::{loader::MyLoader, native_api::RustModule, resolver::OxcResolver};
-use log::{LevelFilter, info};
-use rquickjs::{CatchResultExt, Context, Function, Module, Object, Runtime};
-use rquickjs_extra::console::init as init_console;
+use crate::{
+    combine::{CombineLoader, CombineResolver},
+    native_api::RustModule,
+    resolver::OxcResolver,
+};
+use llrt_modules::module_builder::ModuleBuilder;
+use rquickjs::{
+    CatchResultExt, Context, Function, Module, Object, Runtime,
+    loader::{BuiltinResolver, ModuleLoader, ScriptLoader},
+};
 use std::{fs::read_to_string, path::Path, time::Instant};
 
-mod loader;
+mod combine;
 mod native_api;
 mod resolver;
 
 fn main() -> anyhow::Result<()> {
-    simple_logger::SimpleLogger::new()
-        .env()
-        .with_level(LevelFilter::Info)
-        .init()?;
-
     let start = Instant::now();
 
     let runtime = Runtime::new()?;
     let context = Context::full(&runtime)?;
 
-    let mut resolver = OxcResolver::new();
-    resolver.builtin_resolver.add_module("native-api");
+    let builtin_resolver = BuiltinResolver::default().with_module("native-api");
+    let (llrt_resolver, llrt_loader, global_attachment) = ModuleBuilder::default().build();
+    let oxc_resolver = OxcResolver::new();
+    let combined_resolver = CombineResolver::new()
+        .with_resolver(builtin_resolver)
+        .with_resolver(llrt_resolver)
+        .with_resolver(oxc_resolver);
 
-    let mut loader = MyLoader::default();
-    loader.module_loader.add_module("native-api", RustModule);
+    let module_loader = ModuleLoader::default().with_module("native-api", RustModule);
+    let script_loader = ScriptLoader::default();
+    let loader = CombineLoader::default()
+        .with_loader(module_loader)
+        .with_loader(llrt_loader)
+        .with_loader(script_loader);
 
     let path = Path::new("./js/main.js").canonicalize()?;
     let code = read_to_string(&path)?;
 
-    runtime.set_loader(resolver, loader);
+    runtime.set_loader(combined_resolver, loader);
 
-    context.with(|ctx| {
-        init_console(&ctx).unwrap();
+    context.with(|ctx| -> anyhow::Result<()> {
+        global_attachment.attach(&ctx)?;
 
         let (decl, promise) = Module::declare(ctx.clone(), path.to_str().unwrap(), code)
             .catch(&ctx)
@@ -42,16 +52,18 @@ fn main() -> anyhow::Result<()> {
         promise.finish::<()>().catch(&ctx).unwrap();
 
         let ns = decl.namespace().unwrap();
-        let default_export = ns.get::<_, Object>("default").unwrap();
+        let default_export = ns.get::<_, Object>("default")?;
 
-        let name = default_export.get::<_, String>("name").unwrap();
-        let hook = default_export.get::<_, Function>("hook").unwrap();
+        let name = default_export.get::<_, String>("name")?;
+        let hook = default_export.get::<_, Function>("hook")?;
 
-        info!("Plugin name: {}", name);
+        println!("Plugin name: {}", name);
         let result: i32 = hook.call((42,)).catch(&ctx).unwrap();
-        info!("Hook result: {}", result);
-    });
+        println!("Hook result: {}", result);
 
-    info!("Time cost: {:?}", start.elapsed());
+        Ok(())
+    })?;
+
+    println!("Time cost: {:?}", start.elapsed());
     Ok(())
 }

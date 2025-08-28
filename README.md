@@ -11,3 +11,7 @@ I kindly ask that visitors and reviewers approach this repository with understan
 If you find issues, inefficiencies, or unconventional approaches in the code, please remember that this is a work in progress and not a reflection of professional expertise. I appreciate any suggestions for improvement, but I ask that criticism be delivered in a supportive and considerate manner. The purpose of this repository is to foster a positive learning environment, both for myself and for others who may be inspired to begin their own journey with Rust.
 
 Thank you for taking the time to view my project. Your understanding and encouragement are greatly appreciated.
+
+## Credits
+
+- https://github.com/ahaoboy/rquickjs-llrt-demo
