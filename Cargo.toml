@@ -9,11 +9,19 @@ anyhow = "1.0.99"
 tokio = { version = "1", features = ["full"] }
 
 [dependencies.rquickjs]
-git = "https://github.com/DelSkayn/rquickjs.git"
-version = "0.9.0"
-features = ["full-async", "loader"]
+path = "./rquickjs"
+features = ["loader", "parallel", "full-async"]
 
 [dependencies.llrt_modules]
 path = "llrt/llrt_modules"
 features = ["console", "timers", "fs", "buffer", "process"]
 default-features = false
+
+[dependencies.rolldown]
+path = "../rolldown/crates/rolldown"
+
+[dependencies.rolldown_common]
+path = "../rolldown/crates/rolldown_common"
+
+[patch.'https://github.com/DelSkayn/rquickjs.git']
+rquickjs = { path = "./rquickjs" }
