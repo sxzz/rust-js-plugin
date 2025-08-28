@@ -1,9 +1,11 @@
+import { build } from 'rolldown'
+
 const _1k_entry = Array.from(
   { length: 1000 },
   (_, i) => `export * from '/virtual-${i}';`,
 ).join('\n')
 
-export default {
+const plugin = {
   name: 'test-js-plugin',
   resolveId(id) {
     return id + '.js'
@@ -17,3 +19,9 @@ export default {
       .replace('.js', '')} = 42`
   },
 }
+
+await build({
+  input: ['/entry'],
+  plugins: [plugin],
+  write: false,
+})

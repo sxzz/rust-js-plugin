@@ -25,3 +25,10 @@ path = "../rolldown/crates/rolldown_common"
 
 [patch.'https://github.com/DelSkayn/rquickjs.git']
 rquickjs = { path = "./rquickjs" }
+
+[profile.release]
+codegen-units = 1
+debug = false
+lto = "fat"
+opt-level = 3
+strip = "symbols"

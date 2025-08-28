@@ -9,7 +9,7 @@ use llrt_modules::module_builder::{GlobalAttachment, ModuleBuilder};
 use rolldown::{BundlerBuilder, BundlerOptions};
 use rolldown_common::Output;
 use rquickjs::{
-    AsyncContext, AsyncRuntime, CatchResultExt, Module, Object, Persistent, async_with,
+    AsyncContext, AsyncRuntime, CatchResultExt, Module, Object, Persistent,
     loader::{BuiltinResolver, ModuleLoader, ScriptLoader},
 };
 use std::{fs::read_to_string, path::Path, sync::Arc, time::Instant, vec};
@@ -26,28 +26,29 @@ async fn main() -> anyhow::Result<()> {
     let (_, context, global_attachment) = init_js().await?;
 
     let mut options = BundlerOptions::default();
-    options.input = Some(vec!["/virtual".to_string().into()]);
+    options.input = Some(vec!["/entry".to_string().into()]);
 
-    let (name, plugin_object) = async_with!(context => |ctx| {
-        global_attachment.attach(&ctx)?;
+    let (name, plugin_object) = context
+        .with(|ctx| {
+            global_attachment.attach(&ctx)?;
 
-        let path = Path::new("./js/plugin.js").canonicalize()?;
-        let code = read_to_string(&path)?;
-        let (decl, promise) = Module::declare(ctx.clone(), path.to_str().unwrap(), code)
-            .catch(&ctx)
-            .unwrap()
-            .eval()
-            .catch(&ctx)
-            .unwrap();
-        promise.finish::<()>().catch(&ctx).unwrap();
+            let path = Path::new("./js/plugin.js").canonicalize()?;
+            let code = read_to_string(&path)?;
+            let (decl, promise) = Module::declare(ctx.clone(), path.to_str().unwrap(), code)
+                .catch(&ctx)
+                .unwrap()
+                .eval()
+                .catch(&ctx)
+                .unwrap();
+            promise.finish::<()>().catch(&ctx).unwrap();
 
-        let ns = decl.namespace().unwrap();
-        let default_export = ns.get::<_, Object>("default")?;
-        let name = default_export.get::<_, String>("name")?;
-        let x = Persistent::save(&ctx, default_export);
-        Ok((name, x))
-    })
-    .await?;
+            let ns = decl.namespace().unwrap();
+            let default_export = ns.get::<_, Object>("default")?;
+            let name = default_export.get::<_, String>("name")?;
+            let x = Persistent::save(&ctx, default_export);
+            Ok((name, x))
+        })
+        .await?;
 
     let rolldown_start = Instant::now();
 
@@ -63,10 +64,9 @@ async fn main() -> anyhow::Result<()> {
         _ => None,
     }
     .unwrap();
-    println!("Bundling output: {:}", first_output);
+    println!("Bundling output: {:} length", first_output.len());
 
     bundler.close().await?;
-    context.runtime().run_gc().await;
 
     println!("Rolldown time cost: {:?}", rolldown_start.elapsed());
     println!("Time cost: {:?}", start.elapsed());
@@ -74,6 +74,7 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
+#[inline]
 async fn init_js() -> anyhow::Result<(AsyncRuntime, AsyncContext, GlobalAttachment)> {
     let runtime = AsyncRuntime::new()?;
     let context = AsyncContext::full(&runtime).await?;
