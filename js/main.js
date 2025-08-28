@@ -7,7 +7,7 @@ export default {
     console.log('console log message')
     console.log('globalThis: ' + Object.keys(globalThis).join(', '))
 
-    console.log('builtin_str:', ns.builtin_str)
+    console.log('builtin_str: ' + ns.builtin_str)
     // console.log('echo:', ns.echo(10, 'ok', globalThis))
     console.log('add: ' + ns.add(0.1, 0.2))
 

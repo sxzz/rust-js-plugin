@@ -1,13 +1,12 @@
 use rquickjs::{
     Ctx, Module, Result,
     loader::{Loader, ModuleLoader, ScriptLoader},
-    module::ModuleDef,
 };
 
 #[derive(Debug)]
 pub struct MyLoader {
-    module_loader: ModuleLoader,
-    script_loader: ScriptLoader,
+    pub module_loader: ModuleLoader,
+    pub script_loader: ScriptLoader,
 }
 
 impl Default for MyLoader {
@@ -22,12 +21,7 @@ impl Default for MyLoader {
     }
 }
 
-impl MyLoader {
-    pub fn with_module<N: Into<String>, M: ModuleDef>(mut self, name: N, module: M) -> Self {
-        self.module_loader.add_module(name, module);
-        self
-    }
-}
+impl MyLoader {}
 
 impl Loader for MyLoader {
     fn load<'js>(&mut self, ctx: &Ctx<'js>, path: &str) -> Result<Module<'js>> {

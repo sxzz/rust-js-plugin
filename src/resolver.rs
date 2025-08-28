@@ -8,12 +8,13 @@ use std::{path::Path, result::Result::Ok};
 #[derive(Debug, Default)]
 pub struct OxcResolver {
     oxc_resolver: OxcBaseResolver,
-    builtin_resolver: BuiltinResolver,
+    pub builtin_resolver: BuiltinResolver,
 }
 
 impl OxcResolver {
-    pub fn new(builtin_resolver: BuiltinResolver) -> Self {
+    pub fn new() -> Self {
         let oxc_resolver = OxcBaseResolver::new(ResolveOptions::default());
+        let builtin_resolver = BuiltinResolver::default();
         Self {
             oxc_resolver,
             builtin_resolver,
@@ -23,8 +24,8 @@ impl OxcResolver {
 
 impl Resolver for OxcResolver {
     fn resolve<'js>(&mut self, ctx: &Ctx<'js>, base: &str, name: &str) -> QuickResult<String> {
-        if let QuickResult::Ok(x) = self.builtin_resolver.resolve(ctx, base, name) {
-            return QuickResult::Ok(x);
+        if let QuickResult::Ok(resolved) = self.builtin_resolver.resolve(ctx, base, name) {
+            return QuickResult::Ok(resolved);
         };
 
         let base_dir = Path::new(base).parent().unwrap();
