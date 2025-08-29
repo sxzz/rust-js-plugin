@@ -1,6 +1,3 @@
-[submodule "llrt"]
-	path = llrt
-	url = https://github.com/awslabs/llrt.git
 [submodule "rquickjs"]
 	path = rquickjs
 	url = https://github.com/sxzz/rquickjs.git
