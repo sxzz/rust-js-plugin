@@ -1,4 +1,4 @@
-# Rust Runtime for JavaScript Plugins
+# JavaScript Plugins on Rust
 
 This project is a simple demo created for fun by a Rust learner.
 
@@ -15,3 +15,15 @@ Thank you for taking the time to view my project. Your understanding and encoura
 ## Credits
 
 - https://github.com/ahaoboy/rquickjs-llrt-demo
+
+## Sponsors
+
+<p align="center">
+  <a href="https://cdn.jsdelivr.net/gh/sxzz/sponsors/sponsors.svg">
+    <img src='https://cdn.jsdelivr.net/gh/sxzz/sponsors/sponsors.svg'/>
+  </a>
+</p>
+
+## License
+
+[MIT](./LICENSE) License © 2025-PRESENT [Kevin Deng](https://github.com/sxzz)
